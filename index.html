@@ -10,6 +10,9 @@
       <div id="app">
         {{message}}
       </div>
+      <div>
+      <inpyt type="text" id="test" />  
+      </div>
       <script src="https://cdn.jsdelivr.net/npm/vue@2.5.2/dist/vue.js"></script>
       <script type="text/javascript">
         new Vue({
@@ -18,6 +21,10 @@
             message : 'NARO - '
           }
         });
+        
+        window.onload = function() {
+        document.getElementById("test").focus();
+      };
       </script>
   </body>
 </html>
