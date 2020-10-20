@@ -1,0 +1,329 @@
+function test1123(x){
+
+			var year = x.substr(0,4);
+
+			var month = x.substr(4,2);
+
+			var day = x.substr(6,2);
+
+			var ds = year+"-"+month+"-"+day;
+
+			var d = new Date(ds);
+
+			var di = d.getTime();
+
+			
+
+			return di;
+
+		}
+
+ 
+
+ 
+
+ 
+
+ 
+
+function getDataLoad(currency, period) {
+
+	$.ajax({
+
+		type : 'post',
+
+		url : '/mpb/jcc?withyou=NPFXD0093&__ID=c037527',
+
+		data : {
+
+			"PAGE_TYPE": "DATA",
+
+			"CURRENCY": currency, 
+
+			"PERIOD": period		 	
+
+		},
+
+		timeout : 180000,
+
+		async: true,
+
+		dataType : 'json',
+
+		beforeSend : function () {
+
+			wb_showLoading();
+
+		},
+
+		complete : function () {
+
+			$("#stdDateDiv, #tableDiv, #period").show();
+
+			wb_hideLoading();
+
+		},
+
+		success : function (data) {
+
+			
+
+			if (data.status == "true") {
+
+			var chartData = [];
+
+				$.each(data.chartItems, function(key, value) {					
+
+					var a = [test1123(value.BAS_DT), Number(value.SB_BAS_RT)]; chartData.push(a);
+
+				});
+
+				
+
+				getChartDraw(chartData.reverse());
+
+				wb_hideLoading();
+
+				
+
+			} else {
+
+				alert(data.msg);
+
+				wb_hideLoading();
+
+			}
+
+		},
+
+		error : function (xhr, status, error) {
+
+			alert("환율 데이터 조회가 정상적으로 이루어지지 않습니다.\n잠시 후에 다시 시도하시기 바랍니다.");
+
+			wb_hideLoading();
+
+		}
+
+	});
+
+}
+
+ 
+
+ 
+
+ 
+
+function getChartDraw(data) {
+
+var pointLabel ="USD";
+
+ 
+
+new Highcharts.Chart({
+
+			colors : [ '#70b30f' ],
+
+lang : {
+
+					decimalPoint : '.',
+
+					thousandsSep : ','
+
+				},
+
+ 
+
+				credits : {
+
+					enabled: false
+
+				},
+
+				chart : {  renderTo: 'chartDiv',
+
+					backgroundColor: "#FFF",
+
+					events: {
+
+						load: function(){
+
+							var tooltip = this.tooltip;
+
+							var series = this.series[0];
+
+							var len = series.data.length;
+
+							tooltip.refresh(series.data[len-1]);
+
+						},
+
+					},
+
+					zoomType : false,
+
+					type : 'spline'
+
+				},
+
+				title : {
+
+					text : ''
+
+				},
+
+				xAxis : {
+
+					type : 'datetime',
+
+					labels : {
+
+						format: '{value: %Y.%m.%d}'
+
+					},
+
+					gridLineWidth : 1
+
+				},
+
+				yAxis : {
+
+					title : {
+
+						text : ''
+
+					},
+
+					lineWidth : 0,
+
+					gridLineWidth : 1,
+
+					tickAmount : 6,
+
+					labels : {
+
+						format : '{value: ,.0f}'
+
+					},
+
+					minTickInterval : 1
+
+				},
+
+				legend : {
+
+					enabled : false
+
+				},
+
+				exporting : {
+
+					enabled : false
+
+				},
+
+plotOptions : {
+
+					area : {
+
+						fillColor : {
+
+							linearGradient: {
+
+				              x1: 0,
+
+				              y1: 0,
+
+				              x2: 0,
+
+				              y2: 1
+
+				            },
+
+				            stops: [
+
+				              [0, "rgba(160, 199, 83, 0.3)"],
+
+				              [1, "rgba(178, 219, 119, 0.03)"]
+
+				            ]
+
+				          },
+
+						marker : {
+
+							enabled : false,
+
+							fillColor: "#fff",
+
+							lineColor: "#2e3040",
+
+							lineWidth: 0.5,
+
+							radius: 3,
+
+						},
+
+						lineWidth : 1,
+
+						states: {
+
+							hover: {
+
+								lineWidth: 1,
+
+								enabled: true,
+
+								halo: {
+
+                					size: 10,
+
+                					attributes: {
+
+                  						fill: "rgba(112, 179, 15, 1)",
+
+                					}
+
+                				}
+
+							}
+
+						},
+
+						threshold : null
+
+					}
+
+				},
+
+				tooltip : {
+
+					xDateFormat : '%Y.%m.%d',
+
+					backgroundColor: "#fff",
+
+					borderColor: '#2e3040',
+
+					borderRadius: 15,
+
+					valueSuffix:'원',
+
+					style: {"color":"#2e3040", "fontSize":"14px", "lineHeight":"16px"},
+
+				},
+
+				series : [ {
+
+					type : 'area',
+
+					name : pointLabel,
+
+					data : data
+
+				} ]
+
+	});
+
+			
+
+}
